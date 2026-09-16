@@ -1,0 +1,365 @@
+* {
+  box-sizing: border-box;
+}
+
+.bank-login-page {
+  min-height: 100vh;
+  display: flex;
+  background: #f4f7fb;
+  font-family:
+    Inter,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    sans-serif;
+  color: #142235;
+}
+
+/* LEFT SIDE */
+
+.bank-login-left {
+  width: 48%;
+  min-height: 100vh;
+  padding: 46px 60px;
+  background:
+    linear-gradient(
+      145deg,
+      rgba(7, 34, 65, 0.97),
+      rgba(12, 64, 108, 0.94)
+    );
+  color: white;
+  position: relative;
+  overflow: hidden;
+}
+
+.bank-login-left::before {
+  content: "";
+  position: absolute;
+  width: 420px;
+  height: 420px;
+  border-radius: 50%;
+  border: 1px solid rgba(255,255,255,0.08);
+  right: -180px;
+  bottom: -120px;
+}
+
+.bank-login-left::after {
+  content: "";
+  position: absolute;
+  width: 280px;
+  height: 280px;
+  border-radius: 50%;
+  border: 1px solid rgba(255,255,255,0.06);
+  left: -150px;
+  top: 30%;
+}
+
+.bank-login-brand {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  position: relative;
+  z-index: 2;
+}
+
+.bank-logo-large {
+  width: 58px;
+  height: 58px;
+  border-radius: 15px;
+  background: white;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.bank-logo-large img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.bank-login-brand h1 {
+  margin: 0;
+  font-size: 23px;
+  font-weight: 700;
+}
+
+.bank-login-brand p {
+  margin: 3px 0 0;
+  color: #b9d0e6;
+  font-size: 13px;
+}
+
+.bank-login-message {
+  position: relative;
+  z-index: 2;
+  margin-top: 150px;
+  max-width: 520px;
+}
+
+.bank-login-message > span {
+  color: #7fc6ff;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 2px;
+}
+
+.bank-login-message h2 {
+  font-size: 46px;
+  line-height: 1.12;
+  margin: 18px 0;
+  font-weight: 400;
+}
+
+.bank-login-message h2 strong {
+  font-weight: 700;
+}
+
+.bank-login-message > p {
+  max-width: 430px;
+  color: #c2d3e3;
+  line-height: 1.7;
+  font-size: 15px;
+}
+
+.security-points {
+  display: flex;
+  flex-direction: column;
+  gap: 13px;
+  margin-top: 32px;
+}
+
+.security-points div {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 14px;
+  color: #dce9f4;
+}
+
+.security-points span {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: rgba(83, 187, 255, 0.15);
+  color: #7fd1ff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+}
+
+.bank-login-footer {
+  position: absolute;
+  bottom: 28px;
+  left: 60px;
+  color: #9db6cb;
+  font-size: 12px;
+}
+
+/* RIGHT SIDE */
+
+.bank-login-right {
+  width: 52%;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+  background: #f6f8fb;
+}
+
+.login-card {
+  width: 100%;
+  max-width: 440px;
+  background: white;
+  padding: 42px;
+  border-radius: 20px;
+  border: 1px solid #e4eaf1;
+  box-shadow:
+    0 20px 55px rgba(15, 35, 55, 0.09);
+}
+
+.mobile-bank-logo {
+  display: none;
+}
+
+.login-heading span {
+  color: #3778aa;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 1.7px;
+}
+
+.login-heading h2 {
+  margin: 10px 0 8px;
+  font-size: 29px;
+  color: #132337;
+}
+
+.login-heading p {
+  margin: 0 0 30px;
+  color: #718096;
+  font-size: 14px;
+}
+
+.input-group {
+  margin-bottom: 20px;
+}
+
+.input-group label {
+  display: block;
+  margin-bottom: 8px;
+  color: #26384b;
+  font-size: 13px;
+  font-weight: 650;
+}
+
+.input-wrapper {
+  height: 52px;
+  border: 1px solid #d9e1e9;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  padding: 0 14px;
+  background: #fbfcfe;
+  transition: 0.2s;
+}
+
+.input-wrapper:focus-within {
+  border-color: #377eae;
+  box-shadow: 0 0 0 3px rgba(55, 126, 174, 0.1);
+  background: white;
+}
+
+.input-wrapper span {
+  color: #7890a5;
+  margin-right: 11px;
+  font-size: 14px;
+}
+
+.input-wrapper input {
+  width: 100%;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-size: 14px;
+  color: #18293b;
+}
+
+.input-wrapper input::placeholder {
+  color: #9aa8b6;
+}
+
+.login-error {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 11px 13px;
+  margin-bottom: 18px;
+  border-radius: 9px;
+  background: #fff2f2;
+  color: #bd3d3d;
+  border: 1px solid #f1d2d2;
+  font-size: 13px;
+}
+
+.login-error span {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #d95353;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+}
+
+.bank-signin-button {
+  width: 100%;
+  height: 52px;
+  border: none;
+  border-radius: 10px;
+  background: #0b4f7d;
+  color: white;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 15px;
+  transition: 0.2s;
+}
+
+.bank-signin-button:hover {
+  background: #083f64;
+  transform: translateY(-1px);
+}
+
+.bank-signin-button span {
+  font-size: 18px;
+}
+
+.secure-login-note {
+  margin-top: 25px;
+  padding-top: 20px;
+  border-top: 1px solid #edf1f5;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 7px;
+  color: #8795a4;
+  font-size: 11px;
+}
+
+/* RESPONSIVE */
+
+@media (max-width: 900px) {
+  .bank-login-left {
+    display: none;
+  }
+
+  .bank-login-right {
+    width: 100%;
+    padding: 22px;
+  }
+
+  .mobile-bank-logo {
+    display: flex;
+    width: 55px;
+    height: 55px;
+    margin-bottom: 25px;
+    border-radius: 14px;
+    overflow: hidden;
+    background: white;
+    border: 1px solid #e1e8ef;
+  }
+
+  .mobile-bank-logo img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+
+  .login-card {
+    padding: 30px;
+  }
+}
+
+@media (max-width: 480px) {
+  .bank-login-right {
+    padding: 12px;
+  }
+
+  .login-card {
+    padding: 25px 20px;
+    border-radius: 15px;
+  }
+
+  .login-heading h2 {
+    font-size: 25px;
+  }
+}

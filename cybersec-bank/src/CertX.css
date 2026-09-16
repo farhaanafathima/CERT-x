@@ -1,0 +1,1346 @@
+/* =========================================================
+   CERT X - SECURITY CENTER
+   CertX.css
+   ========================================================= */
+
+* {
+  box-sizing: border-box;
+}
+
+.certx-app {
+  min-height: 100vh;
+  display: flex;
+  background: #f4f7fb;
+  color: #172033;
+  font-family:
+    Inter,
+    "Segoe UI",
+    Arial,
+    sans-serif;
+}
+
+/* =========================================================
+   CERT X LOGIN
+   ========================================================= */
+
+.certx-login-page {
+  min-height: 100vh;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 30px;
+  background:
+    radial-gradient(
+      circle at top right,
+      rgba(35, 101, 176, 0.12),
+      transparent 35%
+    ),
+    linear-gradient(135deg, #071522, #0b2033);
+}
+
+.certx-login-card {
+  width: min(440px, 100%);
+  padding: 42px;
+  background: #ffffff;
+  border: 1px solid #e4eaf1;
+  border-radius: 20px;
+  box-shadow: 0 25px 70px rgba(0, 0, 0, 0.25);
+}
+
+.certx-login-logo {
+  width: 72px;
+  height: 72px;
+  margin: 0 auto 18px;
+  border-radius: 18px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #0b2033;
+  color: #ffffff;
+  font-size: 23px;
+  font-weight: 800;
+  letter-spacing: 1px;
+}
+
+/* If the logo is changed to an image */
+.certx-login-logo img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.certx-login-brand {
+  text-align: center;
+}
+
+.certx-login-brand h1 {
+  margin: 0;
+  font-size: 30px;
+  color: #101828;
+}
+
+.certx-login-brand p {
+  margin: 8px 0 22px;
+  color: #667085;
+  font-size: 14px;
+}
+
+.certx-login-security {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 11px 14px;
+  margin-bottom: 25px;
+  border-radius: 9px;
+  background: #eef8f2;
+  color: #16794c;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.certx-login-security span {
+  font-size: 10px;
+}
+
+.certx-login-form {
+  display: flex;
+  flex-direction: column;
+}
+
+.certx-login-form label {
+  margin: 0 0 7px;
+  color: #344054;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.certx-login-form input {
+  width: 100%;
+  height: 46px;
+  margin-bottom: 17px;
+  padding: 0 14px;
+  border: 1px solid #d0d5dd;
+  border-radius: 9px;
+  outline: none;
+  background: #ffffff;
+  color: #101828;
+  font-size: 14px;
+  transition: 0.2s ease;
+}
+
+.certx-login-form input:focus {
+  border-color: #2868a6;
+  box-shadow: 0 0 0 3px rgba(40, 104, 166, 0.1);
+}
+
+.certx-login-button {
+  width: 100%;
+  height: 48px;
+  margin-top: 5px;
+  border: none;
+  border-radius: 9px;
+  background: #0b2033;
+  color: #ffffff;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 700;
+  transition: 0.2s ease;
+}
+
+.certx-login-button:hover {
+  background: #123a5a;
+  transform: translateY(-1px);
+}
+
+.certx-login-button span {
+  margin-left: 10px;
+}
+
+.certx-login-error {
+  margin: -4px 0 15px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  background: #fff1f1;
+  color: #c62828;
+  font-size: 13px;
+}
+
+.certx-demo-credentials {
+  margin-top: 20px;
+  padding: 13px;
+  border-radius: 9px;
+  background: #f6f8fa;
+  text-align: center;
+  font-size: 12px;
+}
+
+.certx-demo-credentials span {
+  display: block;
+  margin-bottom: 5px;
+  color: #667085;
+}
+
+.certx-demo-credentials strong {
+  color: #344054;
+}
+
+.certx-back-bank {
+  width: 100%;
+  margin-top: 15px;
+  border: none;
+  background: transparent;
+  color: #526581;
+  cursor: pointer;
+  font-size: 13px;
+}
+
+.certx-back-bank:hover {
+  color: #0b2033;
+}
+
+/* =========================================================
+   SIDEBAR
+   ========================================================= */
+
+.certx-sidebar {
+  position: fixed;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 255px;
+  display: flex;
+  flex-direction: column;
+  padding: 25px 17px;
+  background: #091a2a;
+  color: #ffffff;
+  z-index: 10;
+}
+
+.certx-sidebar-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 4px 8px 23px;
+}
+
+.certx-sidebar-logo {
+  width: 43px;
+  height: 43px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 11px;
+  overflow: hidden;
+  background: #ffffff;
+  color: #0b2033;
+  font-weight: 900;
+  font-size: 14px;
+}
+
+/* Image logo support */
+.certx-sidebar-logo img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.certx-sidebar-brand h2 {
+  margin: 0;
+  font-size: 19px;
+  letter-spacing: -0.3px;
+}
+
+.certx-sidebar-brand span {
+  display: block;
+  margin-top: 3px;
+  color: #9db0c2;
+  font-size: 11px;
+}
+
+.certx-sidebar-status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 5px 22px;
+  padding: 9px 11px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.06);
+  color: #a9c1d5;
+  font-size: 11px;
+}
+
+.certx-sidebar-status span {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #35c98a;
+  box-shadow: 0 0 0 4px rgba(53, 201, 138, 0.08);
+}
+
+.certx-navigation {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.certx-navigation button {
+  width: 100%;
+  min-height: 45px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 0 13px;
+  border: none;
+  border-radius: 9px;
+  background: transparent;
+  color: #9eb1c3;
+  cursor: pointer;
+  text-align: left;
+  font-size: 13px;
+  font-weight: 600;
+  transition: 0.18s ease;
+}
+
+.certx-navigation button span {
+  width: 20px;
+  text-align: center;
+  font-size: 16px;
+}
+
+.certx-navigation button:hover {
+  background: rgba(255, 255, 255, 0.07);
+  color: #ffffff;
+}
+
+.certx-navigation .certx-nav-active {
+  background: #173953;
+  color: #ffffff;
+  box-shadow: inset 3px 0 0 #ffffff;
+}
+
+.certx-sidebar-bottom {
+  margin-top: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  padding-top: 18px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.certx-sidebar-bottom button {
+  width: 100%;
+  padding: 11px 12px;
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  color: #9eb1c3;
+  cursor: pointer;
+  text-align: left;
+  font-size: 12px;
+}
+
+.certx-sidebar-bottom button:hover {
+  background: rgba(255, 255, 255, 0.07);
+  color: #ffffff;
+}
+
+/* =========================================================
+   MAIN CONTENT
+   ========================================================= */
+
+.certx-content {
+  width: calc(100% - 255px);
+  min-height: 100vh;
+  margin-left: 255px;
+}
+
+.certx-topbar {
+  min-height: 86px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 38px;
+  border-bottom: 1px solid #e4e9ef;
+  background: #ffffff;
+}
+
+.certx-page-label {
+  color: #718096;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 1.4px;
+}
+
+.certx-topbar h1 {
+  margin: 4px 0 0;
+  color: #152235;
+  font-size: 23px;
+  letter-spacing: -0.5px;
+}
+
+.certx-user-area {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.certx-user-avatar {
+  width: 39px;
+  height: 39px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: #e9eff5;
+  color: #16344e;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.certx-user-area strong {
+  display: block;
+  color: #243447;
+  font-size: 13px;
+}
+
+.certx-user-area span {
+  display: block;
+  margin-top: 2px;
+  color: #8491a2;
+  font-size: 11px;
+}
+
+/* =========================================================
+   PAGE
+   ========================================================= */
+
+.certx-page {
+  width: min(1400px, 100%);
+  margin: 0 auto;
+  padding: 34px 38px 50px;
+}
+
+/* =========================================================
+   HERO
+   ========================================================= */
+
+.certx-hero {
+  min-height: 210px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 30px;
+  padding: 38px 42px;
+  border-radius: 17px;
+  background:
+    linear-gradient(
+      135deg,
+      #0a2237,
+      #123b5a
+    );
+  color: #ffffff;
+  box-shadow: 0 15px 35px rgba(10, 34, 55, 0.12);
+}
+
+.certx-hero-label {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 1.5px;
+  color: #9fb7cb;
+}
+
+.certx-hero h2 {
+  margin: 10px 0 9px;
+  font-size: 31px;
+  letter-spacing: -0.8px;
+}
+
+.certx-hero p {
+  max-width: 570px;
+  margin: 0;
+  color: #c6d5e1;
+  line-height: 1.6;
+  font-size: 13px;
+}
+
+.certx-hero button {
+  flex-shrink: 0;
+  padding: 12px 19px;
+  border: none;
+  border-radius: 8px;
+  background: #ffffff;
+  color: #102b42;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 800;
+  transition: 0.2s ease;
+}
+
+.certx-hero button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.18);
+}
+
+/* =========================================================
+   EMPTY DASHBOARD
+   ========================================================= */
+
+.certx-empty-dashboard {
+  margin-top: 22px;
+  padding: 55px 20px;
+  border: 1px solid #e2e8ef;
+  border-radius: 15px;
+  background: #ffffff;
+  text-align: center;
+}
+
+.certx-empty-icon {
+  width: 65px;
+  height: 65px;
+  margin: 0 auto 15px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 14px;
+  background: #edf3f8;
+  color: #34556f;
+  font-size: 13px;
+  font-weight: 900;
+}
+
+.certx-empty-dashboard h3 {
+  margin: 0;
+  color: #243447;
+  font-size: 17px;
+}
+
+.certx-empty-dashboard p {
+  margin: 8px auto 20px;
+  color: #7b8797;
+  font-size: 13px;
+}
+
+.certx-empty-dashboard button {
+  padding: 11px 18px;
+  border: none;
+  border-radius: 8px;
+  background: #0b2033;
+  color: #ffffff;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+/* =========================================================
+   RESULT HEADER
+   ========================================================= */
+
+.certx-result-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  margin-top: 30px;
+}
+
+.certx-result-heading span {
+  color: #778597;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 1.2px;
+}
+
+.certx-result-heading h3 {
+  margin: 5px 0 0;
+  color: #1d2c3e;
+  font-size: 19px;
+}
+
+.certx-result-heading button {
+  padding: 10px 15px;
+  border: 1px solid #d4dce5;
+  border-radius: 8px;
+  background: #ffffff;
+  color: #24384c;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.certx-result-heading button:hover {
+  background: #f5f8fa;
+}
+
+/* =========================================================
+   SUMMARY CARDS
+   ========================================================= */
+
+.certx-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 15px;
+  margin-top: 17px;
+}
+
+.certx-summary-card {
+  min-height: 112px;
+  padding: 20px;
+  border: 1px solid #e1e7ee;
+  border-radius: 13px;
+  background: #ffffff;
+}
+
+.certx-summary-card span {
+  display: block;
+  margin-bottom: 13px;
+  color: #788697;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.8px;
+}
+
+.certx-summary-card strong {
+  color: #1e2d3e;
+  font-size: 25px;
+}
+
+.certx-summary-card.risk {
+  border-left: 4px solid #c84b4b;
+}
+
+.certx-summary-card.risk strong {
+  color: #c84b4b;
+}
+
+/* =========================================================
+   DETAIL GRID
+   ========================================================= */
+
+.certx-details-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 17px;
+  margin-top: 17px;
+}
+
+.certx-detail-panel {
+  overflow: hidden;
+  border: 1px solid #e1e7ee;
+  border-radius: 13px;
+  background: #ffffff;
+}
+
+.certx-detail-panel-header {
+  padding: 16px 19px;
+  border-bottom: 1px solid #edf0f4;
+  background: #fafbfc;
+}
+
+.certx-detail-panel-header h3 {
+  margin: 0;
+  color: #27384b;
+  font-size: 14px;
+}
+
+.certx-detail-panel-body {
+  padding: 8px 19px 15px;
+}
+
+.certx-detail-row {
+  min-height: 43px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 15px;
+  border-bottom: 1px solid #f0f2f5;
+}
+
+.certx-detail-row:last-child {
+  border-bottom: none;
+}
+
+.certx-detail-row span {
+  color: #7a8796;
+  font-size: 12px;
+}
+
+.certx-detail-row strong {
+  max-width: 55%;
+  color: #26384b;
+  font-size: 12px;
+  text-align: right;
+  word-break: break-word;
+}
+
+.hash-value {
+  margin-top: 10px;
+  padding: 10px;
+  border-radius: 7px;
+  background: #f5f7f9;
+  color: #667085;
+  font-family: monospace;
+  font-size: 10px;
+  line-height: 1.6;
+  word-break: break-all;
+}
+
+/* =========================================================
+   SECURITY FINDINGS
+   ========================================================= */
+
+.certx-reasons {
+  margin-top: 18px;
+  padding: 20px;
+  border: 1px solid #e1e7ee;
+  border-radius: 13px;
+  background: #ffffff;
+}
+
+.certx-reasons h3 {
+  margin: 0 0 14px;
+  color: #26384b;
+  font-size: 14px;
+}
+
+.certx-reason {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin-bottom: 8px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  background: #fff8f8;
+  color: #6e3b3b;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.certx-reason span {
+  width: 19px;
+  height: 19px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: #d75a5a;
+  color: #ffffff;
+  font-size: 10px;
+  font-weight: 800;
+}
+
+.certx-safe-message {
+  padding: 12px;
+  border-radius: 8px;
+  background: #f0f8f4;
+  color: #24744d;
+  font-size: 12px;
+}
+
+/* =========================================================
+   OFFICER ALERT
+   ========================================================= */
+
+.certx-officer-alert {
+  display: flex;
+  align-items: flex-start;
+  gap: 15px;
+  margin-top: 18px;
+  padding: 18px;
+  border: 1px solid #f0d1d1;
+  border-radius: 12px;
+  background: #fff7f7;
+}
+
+.certx-officer-alert .alert-icon {
+  width: 36px;
+  height: 36px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9px;
+  background: #d45151;
+  color: #ffffff;
+  font-weight: 900;
+}
+
+.certx-officer-alert strong {
+  color: #8f3030;
+  font-size: 13px;
+}
+
+.certx-officer-alert p {
+  margin: 5px 0;
+  color: #805c5c;
+  font-size: 12px;
+}
+
+.certx-officer-alert span {
+  color: #9b6d6d;
+  font-size: 11px;
+}
+
+/* =========================================================
+   UPLOAD PAGE
+   ========================================================= */
+
+.certx-upload-page {
+  max-width: 760px;
+  margin: 35px auto;
+  padding: 55px 50px;
+  border: 1px solid #e1e7ee;
+  border-radius: 17px;
+  background: #ffffff;
+  text-align: center;
+  box-shadow: 0 12px 30px rgba(21, 38, 55, 0.04);
+}
+
+.certx-upload-icon {
+  width: 76px;
+  height: 76px;
+  margin: 0 auto 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 17px;
+  background: #edf3f8;
+  color: #284b66;
+  font-size: 15px;
+  font-weight: 900;
+}
+
+.certx-upload-page h2 {
+  margin: 0;
+  color: #203247;
+  font-size: 25px;
+}
+
+.certx-upload-page > p {
+  max-width: 500px;
+  margin: 10px auto 27px;
+  color: #7a8796;
+  font-size: 13px;
+  line-height: 1.7;
+}
+
+.certx-upload-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 150px;
+  padding: 12px 20px;
+  border-radius: 8px;
+  background: #0b2033;
+  color: #ffffff;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 700;
+  transition: 0.2s ease;
+}
+
+.certx-upload-button:hover {
+  background: #153d5b;
+  transform: translateY(-1px);
+}
+
+.certx-selected-file {
+  max-width: 520px;
+  margin: 22px auto 0;
+  padding: 14px 16px;
+  border: 1px solid #e0e7ee;
+  border-radius: 9px;
+  background: #f8fafc;
+  text-align: left;
+}
+
+.certx-selected-file strong {
+  display: block;
+  margin-bottom: 4px;
+  color: #526174;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+}
+
+.certx-selected-file span {
+  display: block;
+  color: #243447;
+  font-size: 12px;
+  word-break: break-word;
+}
+
+.certx-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 20px;
+  color: #657487;
+  font-size: 12px;
+}
+
+.spinner {
+  width: 18px;
+  height: 18px;
+  border: 2px solid #dce3ea;
+  border-top-color: #294f6c;
+  border-radius: 50%;
+  animation: certx-spin 0.8s linear infinite;
+}
+
+@keyframes certx-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.certx-api-error {
+  margin-top: 18px;
+  padding: 12px 15px;
+  border-radius: 8px;
+  background: #fff1f1;
+  color: #b43838;
+  font-size: 12px;
+}
+
+/* =========================================================
+   HISTORY
+   ========================================================= */
+
+.certx-history {
+  padding: 25px;
+  border: 1px solid #e1e7ee;
+  border-radius: 15px;
+  background: #ffffff;
+}
+
+.certx-section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid #edf0f4;
+}
+
+.certx-section-header > div span {
+  color: #7c8997;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 1px;
+}
+
+.certx-section-header h2 {
+  margin: 5px 0 0;
+  color: #26384b;
+  font-size: 20px;
+}
+
+.certx-section-header > strong {
+  padding: 8px 12px;
+  border-radius: 7px;
+  background: #edf3f8;
+  color: #31536d;
+  font-size: 11px;
+}
+
+.certx-no-history {
+  padding: 65px 20px;
+  text-align: center;
+}
+
+.certx-no-history h3 {
+  margin: 0;
+  color: #35475a;
+  font-size: 16px;
+}
+
+.certx-no-history p {
+  margin: 7px 0;
+  color: #8995a3;
+  font-size: 12px;
+}
+
+.certx-history-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.certx-history-item {
+  display: grid;
+  grid-template-columns: 2fr 0.7fr 0.8fr auto;
+  align-items: center;
+  gap: 20px;
+  padding: 17px 5px;
+  border-bottom: 1px solid #edf0f4;
+}
+
+.certx-history-item:last-child {
+  border-bottom: none;
+}
+
+.history-file {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+.history-file-icon {
+  width: 39px;
+  height: 39px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  background: #edf3f8;
+  color: #31546f;
+  font-size: 9px;
+  font-weight: 900;
+}
+
+.history-file strong,
+.history-file span,
+.history-risk strong,
+.history-risk span,
+.history-status strong,
+.history-status span {
+  display: block;
+}
+
+.history-file strong {
+  max-width: 300px;
+  overflow: hidden;
+  color: #26384b;
+  font-size: 12px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.history-file span,
+.history-risk span,
+.history-status span {
+  margin-top: 4px;
+  color: #8995a3;
+  font-size: 10px;
+}
+
+.history-risk strong {
+  color: #c24e4e;
+  font-size: 17px;
+}
+
+.history-status strong {
+  color: #344b61;
+  font-size: 11px;
+  text-transform: uppercase;
+}
+
+.certx-history-item button {
+  padding: 9px 13px;
+  border: 1px solid #d8e0e8;
+  border-radius: 7px;
+  background: #ffffff;
+  color: #31536d;
+  cursor: pointer;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.certx-history-item button:hover {
+  background: #f5f8fa;
+}
+
+/* =========================================================
+   ANALYSIS PAGES
+   ========================================================= */
+
+.certx-analysis-page,
+.certx-report-page {
+  padding: 35px;
+  border: 1px solid #e1e7ee;
+  border-radius: 16px;
+  background: #ffffff;
+}
+
+.certx-analysis-label {
+  color: #758495;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 1.2px;
+}
+
+.certx-analysis-page h2,
+.certx-report-page h2 {
+  margin: 7px 0;
+  color: #23364a;
+  font-size: 25px;
+}
+
+.certx-analysis-page > p,
+.certx-report-page > p {
+  max-width: 700px;
+  margin: 0;
+  color: #7d8998;
+  font-size: 13px;
+  line-height: 1.7;
+}
+
+.big-risk-score {
+  width: 220px;
+  margin: 35px auto;
+  padding: 25px;
+  border: 1px solid #e4e9ee;
+  border-radius: 16px;
+  text-align: center;
+  background: #fafbfc;
+}
+
+.big-risk-score span {
+  display: block;
+  color: #7d8998;
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.big-risk-score strong {
+  display: block;
+  margin: 8px 0;
+  color: #bd4c4c;
+  font-size: 48px;
+}
+
+.big-risk-score small {
+  color: #7d3d3d;
+  font-size: 10px;
+  font-weight: 800;
+}
+
+.analysis-findings {
+  max-width: 750px;
+  margin: 0 auto;
+}
+
+.analysis-findings > div {
+  margin-bottom: 8px;
+  padding: 11px 13px;
+  border-radius: 8px;
+  background: #fff7f7;
+  color: #704545;
+  font-size: 12px;
+}
+
+.analysis-findings span {
+  display: inline-flex;
+  width: 20px;
+  height: 20px;
+  align-items: center;
+  justify-content: center;
+  margin-right: 9px;
+  border-radius: 50%;
+  background: #d45757;
+  color: #ffffff;
+  font-weight: 800;
+}
+
+.certx-analysis-empty {
+  margin-top: 30px;
+  padding: 35px;
+  border: 1px dashed #ccd6df;
+  border-radius: 12px;
+  color: #8793a1;
+  text-align: center;
+  font-size: 12px;
+}
+
+/* =========================================================
+   QUANTUM
+   ========================================================= */
+
+.quantum-result {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 15px;
+  margin-top: 30px;
+}
+
+.quantum-result > div {
+  padding: 19px;
+  border: 1px solid #e2e8ef;
+  border-radius: 11px;
+  background: #fafbfc;
+}
+
+.quantum-result span {
+  display: block;
+  margin-bottom: 8px;
+  color: #7c8998;
+  font-size: 10px;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.quantum-result strong {
+  color: #263b50;
+  font-size: 14px;
+}
+
+.quantum-explanation {
+  grid-column: 1 / -1;
+}
+
+.quantum-explanation p {
+  margin: 0;
+  color: #647386;
+  font-size: 12px;
+  line-height: 1.7;
+}
+
+/* =========================================================
+   REPORTS
+   ========================================================= */
+
+.report-preview {
+  max-width: 700px;
+  margin-top: 30px;
+  padding: 25px;
+  border: 1px solid #e1e7ee;
+  border-radius: 13px;
+  background: #fafbfc;
+}
+
+.report-preview > div {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 13px 0;
+  border-bottom: 1px solid #e8edf2;
+}
+
+.report-preview > div span {
+  color: #7e8a99;
+  font-size: 11px;
+}
+
+.report-preview > div strong {
+  color: #293d51;
+  font-size: 12px;
+  text-align: right;
+}
+
+.report-preview button {
+  margin-top: 22px;
+  padding: 11px 17px;
+  border: none;
+  border-radius: 8px;
+  background: #0b2033;
+  color: #ffffff;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.report-preview button:hover {
+  background: #153d5b;
+}
+
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
+
+@media (max-width: 1100px) {
+  .certx-summary-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .certx-history-item {
+    grid-template-columns: 1.7fr 0.6fr 0.7fr auto;
+  }
+}
+
+@media (max-width: 850px) {
+  .certx-sidebar {
+    position: relative;
+    width: 100%;
+    min-height: auto;
+  }
+
+  .certx-app {
+    display: block;
+  }
+
+  .certx-content {
+    width: 100%;
+    margin-left: 0;
+  }
+
+  .certx-navigation {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .certx-sidebar-bottom {
+    margin-top: 15px;
+  }
+
+  .certx-details-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .certx-history-item {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+}
+
+@media (max-width: 650px) {
+  .certx-login-card {
+    padding: 28px 22px;
+  }
+
+  .certx-topbar {
+    padding: 18px 20px;
+  }
+
+  .certx-user-area {
+    display: none;
+  }
+
+  .certx-page {
+    padding: 22px 17px 40px;
+  }
+
+  .certx-hero {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 28px 25px;
+  }
+
+  .certx-hero h2 {
+    font-size: 25px;
+  }
+
+  .certx-summary-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .certx-upload-page,
+  .certx-analysis-page,
+  .certx-report-page {
+    padding: 28px 20px;
+  }
+
+  .quantum-result {
+    grid-template-columns: 1fr;
+  }
+
+  .quantum-explanation {
+    grid-column: auto;
+  }
+}
