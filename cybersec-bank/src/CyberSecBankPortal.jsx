@@ -1,100 +1,60 @@
 import React, { useState } from "react";
 import "./BankPortal.css";
 
-const accountData = {
-  savings: {
-    name: "Savings Account",
-    number: "XXXX 4821",
-    balance: "₹1,24,580.00",
-  },
-  current: {
-    name: "Current Account",
-    number: "XXXX 7294",
-    balance: "₹82,450.00",
-  },
-};
-
-const transactions = [
-  {
-    name: "Amazon India",
-    date: "15 Sep 2026",
-    amount: "₹2,450",
-    type: "debit",
-    category: "Shopping",
-  },
-  {
-    name: "Salary Credit",
-    date: "12 Sep 2026",
-    amount: "₹45,000",
-    type: "credit",
-    category: "Income",
-  },
-  {
-    name: "Electricity Bill",
-    date: "10 Sep 2026",
-    amount: "₹1,280",
-    type: "debit",
-    category: "Bills",
-  },
-  {
-    name: "UPI Transfer",
-    date: "08 Sep 2026",
-    amount: "₹3,500",
-    type: "debit",
-    category: "Transfer",
-  },
-  {
-    name: "Swiggy",
-    date: "06 Sep 2026",
-    amount: "₹680",
-    type: "debit",
-    category: "Food",
-  },
-  {
-    name: "Interest Credit",
-    date: "01 Sep 2026",
-    amount: "₹1,240",
-    type: "credit",
-    category: "Income",
-  },
-];
-
-const beneficiaries = [
-  {
-    name: "Mom",
-    account: "XXXX 1190",
-  },
-  {
-    name: "Home Account",
-    account: "XXXX 4821",
-  },
-  {
-    name: "College",
-    account: "XXXX 7294",
-  },
-];
-
 function CyberSecBankPortal({
-  username,
+  username = "Farhaana",
   onOpenCertX,
   onLogout,
 }) {
   const [page, setPage] = useState("dashboard");
-  const [selectedAccount, setSelectedAccount] =
-    useState("savings");
-  const [showNotification, setShowNotification] =
-    useState(false);
+  const [showNotifications, setShowNotifications] = useState(false);
 
-  const currentAccount =
-    accountData[selectedAccount];
+  const displayName =
+    username.charAt(0).toUpperCase() + username.slice(1);
 
-  const navigate = (target) => {
-    setPage(target);
-    window.scrollTo({
-      top: 0,
-      behavior: "smooth",
-    });
-  };
+  const accounts = [
+    {
+      type: "Savings Account",
+      number: "XXXX 4821",
+      balance: "₹1,24,580.00",
+    },
+    {
+      type: "Current Account",
+      number: "XXXX 7294",
+      balance: "₹82,450.00",
+    },
+  ];
+
+  const transactions = [
+    {
+      name: "Amazon India",
+      date: "15 Sep 2026",
+      amount: "-₹2,450",
+      type: "debit",
+      icon: "↑",
+    },
+    {
+      name: "Salary Credit",
+      date: "12 Sep 2026",
+      amount: "+₹45,000",
+      type: "credit",
+      icon: "↓",
+    },
+    {
+      name: "Electricity Bill",
+      date: "10 Sep 2026",
+      amount: "-₹1,280",
+      type: "debit",
+      icon: "↑",
+    },
+    {
+      name: "UPI Transfer",
+      date: "08 Sep 2026",
+      amount: "-₹3,500",
+      type: "debit",
+      icon: "↑",
+    },
+  ];
 
   const navItems = [
     {
@@ -108,11 +68,6 @@ function CyberSecBankPortal({
       icon: "▣",
     },
     {
-      id: "transactions",
-      label: "Transactions",
-      icon: "↕",
-    },
-    {
       id: "payments",
       label: "Payments",
       icon: "₹",
@@ -123,31 +78,40 @@ function CyberSecBankPortal({
       icon: "♙",
     },
     {
-      id: "documents",
-      label: "Documents",
+      id: "statements",
+      label: "Statements",
       icon: "▤",
     },
   ];
 
+  const handleNavigation = (id) => {
+    setPage(id);
+    setShowNotifications(false);
+  };
+
   return (
     <div className="bank-portal">
 
-      {/* SIDEBAR */}
+      {/* =====================================================
+          SIDEBAR
+      ====================================================== */}
 
       <aside className="bank-sidebar">
 
         <div className="bank-sidebar-brand">
+
           <div className="bank-sidebar-logo">
             <img
-              src="/cybersecbank-photo.jpeg"
+              src="/cybersecbank-logo.png"
               alt="CyberSec Bank"
             />
           </div>
 
           <div>
-            <h2>CyberSec</h2>
-            <span>Bank</span>
+            <h2>CyberSec Bank</h2>
+            <span>Secure Digital Banking</span>
           </div>
+
         </div>
 
         <div className="bank-secure-session">
@@ -156,6 +120,7 @@ function CyberSecBankPortal({
         </div>
 
         <nav className="bank-nav">
+
           {navItems.map((item) => (
             <button
               key={item.id}
@@ -165,13 +130,14 @@ function CyberSecBankPortal({
                   : ""
               }
               onClick={() =>
-                navigate(item.id)
+                handleNavigation(item.id)
               }
             >
               <span>{item.icon}</span>
               {item.label}
             </button>
           ))}
+
         </nav>
 
         <div className="bank-sidebar-bottom">
@@ -181,12 +147,15 @@ function CyberSecBankPortal({
             onClick={onOpenCertX}
           >
             <span>✦</span>
+
             <div>
               <strong>Cert X</strong>
+
               <small>
-                Digital Security
+                Digital Security Service
               </small>
             </div>
+
             <b>→</b>
           </button>
 
@@ -194,35 +163,44 @@ function CyberSecBankPortal({
             className="bank-logout"
             onClick={onLogout}
           >
-            ⇥ Logout
+            ⇥ &nbsp; Sign Out
           </button>
 
         </div>
+
       </aside>
 
-      {/* MAIN */}
+
+      {/* =====================================================
+          MAIN CONTENT
+      ====================================================== */}
 
       <main className="bank-main">
 
-        {/* TOPBAR */}
+        {/* TOP BAR */}
 
         <header className="bank-topbar">
 
           <div className="mobile-brand">
+
             <div className="bank-sidebar-logo">
               <img
-                src="/cybersecbank-photo.jpeg"
+                src="/cybersecbank-logo.png"
                 alt="CyberSec Bank"
               />
             </div>
 
-            <strong>CyberSec Bank</strong>
+            <strong>
+              CyberSec Bank
+            </strong>
+
           </div>
 
           <div className="bank-breadcrumb">
             CyberSec Bank
-            <span>/</span>
-            Secure Banking
+            <span>›</span>
+            {page.charAt(0).toUpperCase() +
+              page.slice(1)}
           </div>
 
           <div className="bank-top-actions">
@@ -230,134 +208,190 @@ function CyberSecBankPortal({
             <button
               className="notification-button"
               onClick={() =>
-                setShowNotification(
-                  !showNotification
+                setShowNotifications(
+                  !showNotifications
                 )
               }
             >
-              ♢
+              ♧
               <span></span>
             </button>
 
             <div className="top-user">
+
               <div className="top-user-avatar">
-                {username?.charAt(0).toUpperCase()}
+                {displayName.charAt(0)}
               </div>
 
               <div>
-                <strong>{username}</strong>
+                <strong>{displayName}</strong>
                 <small>Banking User</small>
               </div>
+
             </div>
 
           </div>
 
-          {showNotification && (
+          {showNotifications && (
             <div className="notification-box">
-              <strong>Notifications</strong>
+
+              <strong>
+                Notifications
+              </strong>
+
               <p>
-                Your account is secure.
+                Your banking session is secure.
               </p>
+
               <p>
                 No new security alerts.
               </p>
+
             </div>
           )}
 
         </header>
 
-        {/* CONTENT */}
 
-        <div className="bank-content">
+        {/* =====================================================
+            DASHBOARD
+        ====================================================== */}
 
-          {/* DASHBOARD */}
+        {page === "dashboard" && (
 
-          {page === "dashboard" && (
-            <>
+          <div className="bank-page-container">
+
+            <div className="bank-content">
+
               <div className="bank-page-header">
 
                 <div>
-                  <span>WELCOME BACK</span>
+
+                  <span>
+                    WELCOME BACK
+                  </span>
 
                   <h1>
-                    Hello, {username}
+                    Hello, {displayName}
                   </h1>
 
                   <p>
                     Manage your banking activities
                     securely from one place.
                   </p>
+
                 </div>
 
                 <div className="account-protected">
+
                   <span>✓</span>
+
                   Account Protected
+
                 </div>
 
               </div>
 
+
+              {/* ACCOUNTS */}
+
               <section className="bank-section">
 
                 <div className="section-heading">
+
                   <div>
-                    <span>YOUR FINANCES</span>
-                    <h2>Account Overview</h2>
+                    <span>
+                      YOUR FINANCES
+                    </span>
+
+                    <h2>
+                      Account Overview
+                    </h2>
                   </div>
 
                   <button
                     onClick={() =>
-                      navigate("accounts")
+                      setPage("accounts")
                     }
                   >
                     View Accounts →
                   </button>
+
                 </div>
+
 
                 <div className="account-cards">
 
-                  <AccountCard
-                    account={
-                      accountData.savings
-                    }
-                    active={
-                      selectedAccount ===
-                      "savings"
-                    }
-                    onClick={() =>
-                      setSelectedAccount(
-                        "savings"
-                      )
-                    }
-                  />
+                  {accounts.map(
+                    (account, index) => (
 
-                  <AccountCard
-                    account={
-                      accountData.current
-                    }
-                    active={
-                      selectedAccount ===
-                      "current"
-                    }
-                    onClick={() =>
-                      setSelectedAccount(
-                        "current"
-                      )
-                    }
-                  />
+                      <button
+                        key={index}
+                        className="account-card"
+                        onClick={() =>
+                          setPage("accounts")
+                        }
+                      >
+
+                        <div className="account-card-top">
+
+                          <span>
+                            {account.type}
+                          </span>
+
+                          <span>
+                            •••
+                          </span>
+
+                        </div>
+
+                        <strong>
+                          {account.number}
+                        </strong>
+
+                        <small>
+                          Available Balance
+                        </small>
+
+                        <h2>
+                          {account.balance}
+                        </h2>
+
+                        <div className="account-card-footer">
+
+                          <span>
+                            View account details
+                          </span>
+
+                          <span>
+                            →
+                          </span>
+
+                        </div>
+
+                      </button>
+
+                    )
+                  )}
 
                 </div>
 
               </section>
+
+
+              {/* TRANSACTIONS + QUICK ACTIONS */}
 
               <div className="dashboard-columns">
 
                 <section className="bank-panel">
 
                   <div className="panel-heading">
+
                     <div>
                       <span>
                         ACCOUNT ACTIVITY
                       </span>
+
                       <h2>
                         Recent Transactions
                       </h2>
@@ -365,27 +399,65 @@ function CyberSecBankPortal({
 
                     <button
                       onClick={() =>
-                        navigate(
-                          "transactions"
-                        )
+                        setPage("statements")
                       }
                     >
                       View All
                     </button>
+
                   </div>
 
-                  <TransactionList
-                    items={transactions.slice(
-                      0,
-                      4
+
+                  <div className="transaction-list">
+
+                    {transactions.map(
+                      (transaction, index) => (
+
+                        <div
+                          className="transaction-row"
+                          key={index}
+                        >
+
+                          <div
+                            className={`transaction-icon ${transaction.type}`}
+                          >
+                            {transaction.icon}
+                          </div>
+
+                          <div className="transaction-info">
+
+                            <strong>
+                              {transaction.name}
+                            </strong>
+
+                            <span>
+                              {transaction.date}
+                            </span>
+
+                          </div>
+
+                          <div
+                            className={`transaction-amount ${transaction.type}`}
+                          >
+                            {transaction.amount}
+                          </div>
+
+                        </div>
+
+                      )
                     )}
-                  />
+
+                  </div>
 
                 </section>
 
-                <section className="bank-panel quick-panel">
+
+                {/* QUICK ACTIONS */}
+
+                <section className="bank-panel">
 
                   <div className="panel-heading">
+
                     <div>
                       <span>
                         QUICK ACTIONS
@@ -395,53 +467,106 @@ function CyberSecBankPortal({
                         Banking Services
                       </h2>
                     </div>
+
                   </div>
+
 
                   <div className="quick-actions">
 
-                    <QuickAction
-                      icon="₹"
-                      title="Send Money"
-                      text="Transfer funds"
+                    <button
+                      className="quick-action"
                       onClick={() =>
-                        navigate(
-                          "payments"
-                        )
+                        setPage("payments")
                       }
-                    />
+                    >
 
-                    <QuickAction
-                      icon="↗"
-                      title="Pay Bills"
-                      text="Manage payments"
-                      onClick={() =>
-                        navigate(
-                          "payments"
-                        )
-                      }
-                    />
+                      <div>₹</div>
 
-                    <QuickAction
-                      icon="♙"
-                      title="Beneficiaries"
-                      text="Manage recipients"
-                      onClick={() =>
-                        navigate(
-                          "beneficiaries"
-                        )
-                      }
-                    />
+                      <span>
+                        <strong>
+                          Send Money
+                        </strong>
 
-                    <QuickAction
-                      icon="▤"
-                      title="Statements"
-                      text="View documents"
+                        <small>
+                          Transfer funds
+                        </small>
+                      </span>
+
+                      <b>→</b>
+
+                    </button>
+
+
+                    <button
+                      className="quick-action"
                       onClick={() =>
-                        navigate(
-                          "documents"
-                        )
+                        setPage("payments")
                       }
-                    />
+                    >
+
+                      <div>↗</div>
+
+                      <span>
+                        <strong>
+                          Pay Bills
+                        </strong>
+
+                        <small>
+                          Manage payments
+                        </small>
+                      </span>
+
+                      <b>→</b>
+
+                    </button>
+
+
+                    <button
+                      className="quick-action"
+                      onClick={() =>
+                        setPage("beneficiaries")
+                      }
+                    >
+
+                      <div>♙</div>
+
+                      <span>
+                        <strong>
+                          Beneficiaries
+                        </strong>
+
+                        <small>
+                          Manage recipients
+                        </small>
+                      </span>
+
+                      <b>→</b>
+
+                    </button>
+
+
+                    <button
+                      className="quick-action"
+                      onClick={() =>
+                        setPage("statements")
+                      }
+                    >
+
+                      <div>▤</div>
+
+                      <span>
+                        <strong>
+                          Statements
+                        </strong>
+
+                        <small>
+                          View documents
+                        </small>
+                      </span>
+
+                      <b>→</b>
+
+                    </button>
 
                   </div>
 
@@ -449,151 +574,350 @@ function CyberSecBankPortal({
 
               </div>
 
+
               {/* CERT X */}
 
-              <section className="certx-bank-banner">
+              <section className="bank-section">
 
-                <div className="certx-bank-icon">
-                  ✦
-                </div>
+                <div className="certx-bank-banner">
 
-                <div className="certx-bank-text">
-                  <span>
-                    CYBERSECURITY SERVICE
-                  </span>
-
-                  <h2>Cert X</h2>
-
-                  <p>
-                    Verify digital signatures,
-                    document integrity and
-                    security risks.
-                  </p>
-
-                  <div className="certx-features">
-                    <span>
-                      ✓ Signature Verification
-                    </span>
-
-                    <span>
-                      ✓ Integrity Check
-                    </span>
-
-                    <span>
-                      ✓ Threat Analysis
-                    </span>
+                  <div className="certx-bank-icon">
+                    ✦
                   </div>
-                </div>
 
-                <button
-                  onClick={onOpenCertX}
-                >
-                  Open Cert X
-                  <span>→</span>
-                </button>
+                  <div className="certx-bank-text">
+
+                    <span>
+                      CYBERSECURITY SERVICE
+                    </span>
+
+                    <h2>
+                      Cert X
+                    </h2>
+
+                    <p>
+                      Verify digital signatures,
+                      document integrity and
+                      security risks.
+                    </p>
+
+                    <div className="certx-features">
+
+                      <span>
+                        ✓ Signature Verification
+                      </span>
+
+                      <span>
+                        ✓ Integrity Check
+                      </span>
+
+                      <span>
+                        ✓ Threat Analysis
+                      </span>
+
+                    </div>
+
+                  </div>
+
+                  <button
+                    onClick={onOpenCertX}
+                  >
+                    Open Cert X
+                    <span>→</span>
+                  </button>
+
+                </div>
 
               </section>
-            </>
-          )}
 
-          {/* ACCOUNTS */}
+            </div>
 
-          {page === "accounts" && (
-            <PageContainer
-              label="BANKING"
-              title="Your Accounts"
-              subtitle="View your account balances and account information."
-            >
-              <div className="account-cards large">
+          </div>
 
-                <AccountCard
-                  account={
-                    accountData.savings
-                  }
-                  active={
-                    selectedAccount ===
-                    "savings"
-                  }
-                  onClick={() =>
-                    setSelectedAccount(
-                      "savings"
-                    )
-                  }
-                />
+        )}
 
-                <AccountCard
-                  account={
-                    accountData.current
-                  }
-                  active={
-                    selectedAccount ===
-                    "current"
-                  }
-                  onClick={() =>
-                    setSelectedAccount(
-                      "current"
-                    )
-                  }
-                />
 
-              </div>
+        {/* =====================================================
+            ACCOUNTS PAGE
+        ====================================================== */}
 
-              <div className="account-detail-card">
+        {page === "accounts" && (
 
-                <span>
-                  SELECTED ACCOUNT
-                </span>
+          <div className="bank-page-container">
 
-                <h2>
-                  {currentAccount.name}
-                </h2>
+            <div className="bank-content">
 
-                <p>
-                  Account Number:{" "}
-                  {currentAccount.number}
-                </p>
+              <div className="bank-page-header">
 
-                <strong>
-                  {currentAccount.balance}
-                </strong>
+                <div>
+                  <span>
+                    YOUR FINANCES
+                  </span>
 
-                <div className="detail-actions">
-                  <button
-                    onClick={() =>
-                      navigate(
-                        "transactions"
-                      )
-                    }
-                  >
-                    View Transactions
-                  </button>
+                  <h1>
+                    Accounts
+                  </h1>
 
-                  <button
-                    onClick={() =>
-                      navigate(
-                        "documents"
-                      )
-                    }
-                  >
-                    View Statement
-                  </button>
+                  <p>
+                    View your account balances
+                    and details.
+                  </p>
                 </div>
 
               </div>
-            </PageContainer>
-          )}
 
-          {/* TRANSACTIONS */}
 
-          {page === "transactions" && (
-            <PageContainer
-              label="ACCOUNT ACTIVITY"
-              title="Transactions"
-              subtitle="Review your recent account activity."
-            >
+              <div className="account-cards large">
+
+                {accounts.map(
+                  (account, index) => (
+
+                    <div
+                      className="account-detail-card"
+                      key={index}
+                    >
+
+                      <span>
+                        {account.type}
+                      </span>
+
+                      <h2>
+                        {account.number}
+                      </h2>
+
+                      <p>
+                        CyberSec Bank
+                      </p>
+
+                      <strong>
+                        {account.balance}
+                      </strong>
+
+                      <div className="detail-actions">
+
+                        <button>
+                          Account Details
+                        </button>
+
+                        <button
+                          onClick={() =>
+                            setPage("statements")
+                          }
+                        >
+                          View Transactions
+                        </button>
+
+                      </div>
+
+                    </div>
+
+                  )
+                )}
+
+              </div>
+
+            </div>
+
+          </div>
+
+        )}
+
+
+        {/* =====================================================
+            PAYMENTS PAGE
+        ====================================================== */}
+
+        {page === "payments" && (
+
+          <div className="bank-page-container">
+
+            <div className="bank-content">
+
+              <div className="bank-page-header">
+
+                <div>
+                  <span>
+                    BANKING SERVICES
+                  </span>
+
+                  <h1>
+                    Payments
+                  </h1>
+
+                  <p>
+                    Manage your transfers and
+                    bill payments.
+                  </p>
+                </div>
+
+              </div>
+
+
+              <div className="payment-grid">
+
+                <div className="payment-card">
+
+                  <div className="payment-icon">
+                    ₹
+                  </div>
+
+                  <h3>
+                    Send Money
+                  </h3>
+
+                  <p>
+                    Transfer money securely
+                    to your beneficiaries.
+                  </p>
+
+                  <span>
+                    Start Transfer →
+                  </span>
+
+                </div>
+
+
+                <div className="payment-card">
+
+                  <div className="payment-icon">
+                    ↗
+                  </div>
+
+                  <h3>
+                    Pay Bills
+                  </h3>
+
+                  <p>
+                    Manage electricity,
+                    utility and other payments.
+                  </p>
+
+                  <span>
+                    Pay a Bill →
+                  </span>
+
+                </div>
+
+              </div>
+
+            </div>
+
+          </div>
+
+        )}
+
+
+        {/* =====================================================
+            BENEFICIARIES PAGE
+        ====================================================== */}
+
+        {page === "beneficiaries" && (
+
+          <div className="bank-page-container">
+
+            <div className="bank-content">
+
+              <div className="bank-page-header">
+
+                <div>
+                  <span>
+                    BANKING SERVICES
+                  </span>
+
+                  <h1>
+                    Beneficiaries
+                  </h1>
+
+                  <p>
+                    Manage your saved recipients.
+                  </p>
+                </div>
+
+              </div>
+
+
+              <div className="beneficiary-grid">
+
+                {[
+                  "Srinivasan",
+                  "Thirunavukarasu",
+                  "Abdul Wahith",
+                ].map(
+                  (name, index) => (
+
+                    <div
+                      className="beneficiary-card"
+                      key={index}
+                    >
+
+                      <div className="beneficiary-avatar">
+                        {name.charAt(0)}
+                      </div>
+
+                      <div>
+
+                        <strong>
+                          {name}
+                        </strong>
+
+                        <span>
+                          Bank Account •••• {4821 + index}
+                        </span>
+
+                      </div>
+
+                      <button>
+                        View
+                      </button>
+
+                    </div>
+
+                  )
+                )}
+
+              </div>
+
+            </div>
+
+          </div>
+
+        )}
+
+
+        {/* =====================================================
+            STATEMENTS PAGE
+        ====================================================== */}
+
+        {page === "statements" && (
+
+          <div className="bank-page-container">
+
+            <div className="bank-content">
+
+              <div className="bank-page-header">
+
+                <div>
+                  <span>
+                    ACCOUNT ACTIVITY
+                  </span>
+
+                  <h1>
+                    Statements
+                  </h1>
+
+                  <p>
+                    View your recent banking
+                    documents and transactions.
+                  </p>
+                </div>
+
+              </div>
+
+
               <section className="bank-panel">
 
                 <div className="panel-heading">
+
                   <div>
                     <span>
                       RECENT ACTIVITY
@@ -604,137 +928,66 @@ function CyberSecBankPortal({
                     </h2>
                   </div>
 
-                  <span className="transaction-count">
-                    {transactions.length} Transactions
-                  </span>
                 </div>
 
-                <TransactionList
-                  items={transactions}
-                  detailed
-                />
+
+                <div className="transaction-list transaction-list-detailed">
+
+                  {transactions.map(
+                    (transaction, index) => (
+
+                      <div
+                        className="transaction-row"
+                        key={index}
+                      >
+
+                        <div
+                          className={`transaction-icon ${transaction.type}`}
+                        >
+                          {transaction.icon}
+                        </div>
+
+                        <div className="transaction-info">
+
+                          <strong>
+                            {transaction.name}
+                          </strong>
+
+                          <span>
+                            {transaction.date}
+                          </span>
+
+                        </div>
+
+                        <div
+                          className={`transaction-amount ${transaction.type}`}
+                        >
+                          {transaction.amount}
+                        </div>
+
+                        <button className="transaction-view">
+                          View
+                        </button>
+
+                      </div>
+
+                    )
+                  )}
+
+                </div>
 
               </section>
-            </PageContainer>
-          )}
 
-          {/* PAYMENTS */}
+            </div>
 
-          {page === "payments" && (
-            <PageContainer
-              label="PAYMENTS"
-              title="Payments & Transfers"
-              subtitle="Choose a banking service to continue."
-            >
-              <div className="payment-grid">
+          </div>
 
-                <PaymentCard
-                  icon="₹"
-                  title="Send Money"
-                  text="Transfer money to a beneficiary."
-                />
+        )}
 
-                <PaymentCard
-                  icon="↗"
-                  title="Pay Bills"
-                  text="Manage electricity and utility bills."
-                />
-
-                <PaymentCard
-                  icon="▣"
-                  title="UPI Payment"
-                  text="Make a quick digital payment."
-                />
-
-                <PaymentCard
-                  icon="◷"
-                  title="Scheduled Payments"
-                  text="View your upcoming payments."
-                />
-
-              </div>
-            </PageContainer>
-          )}
-
-          {/* BENEFICIARIES */}
-
-          {page === "beneficiaries" && (
-            <PageContainer
-              label="PAYMENT MANAGEMENT"
-              title="Beneficiaries"
-              subtitle="Manage your saved payment recipients."
-            >
-              <div className="beneficiary-grid">
-
-                {beneficiaries.map(
-                  (person) => (
-                    <div
-                      className="beneficiary-card"
-                      key={person.name}
-                    >
-                      <div className="beneficiary-avatar">
-                        {person.name
-                          .charAt(0)}
-                      </div>
-
-                      <div>
-                        <strong>
-                          {person.name}
-                        </strong>
-
-                        <span>
-                          {person.account}
-                        </span>
-                      </div>
-
-                      <button>
-                        Transfer →
-                      </button>
-                    </div>
-                  )
-                )}
-
-              </div>
-            </PageContainer>
-          )}
-
-          {/* DOCUMENTS */}
-
-          {page === "documents" && (
-            <PageContainer
-              label="DOCUMENT CENTER"
-              title="Documents & Statements"
-              subtitle="Access your banking documents."
-            >
-              <div className="documents-grid">
-
-                <DocumentCard
-                  title="Savings Statement"
-                  date="September 2026"
-                />
-
-                <DocumentCard
-                  title="Current Account Statement"
-                  date="September 2026"
-                />
-
-                <DocumentCard
-                  title="Transaction Summary"
-                  date="September 2026"
-                />
-
-                <DocumentCard
-                  title="Annual Account Summary"
-                  date="FY 2025–26"
-                />
-
-              </div>
-            </PageContainer>
-          )}
-
-        </div>
+        {/* FOOTER */}
 
         <footer className="bank-footer">
+
           <span>
             © 2026 CyberSec Bank
           </span>
@@ -746,202 +999,12 @@ function CyberSecBankPortal({
           <span>
             Protected Session
           </span>
+
         </footer>
 
       </main>
+
     </div>
-  );
-}
-
-/* ACCOUNT */
-
-function AccountCard({
-  account,
-  active,
-  onClick,
-}) {
-  return (
-    <button
-      className={`account-card ${
-        active ? "account-card-active" : ""
-      }`}
-      onClick={onClick}
-    >
-      <div className="account-card-top">
-        <span>{account.name}</span>
-        <b>•••</b>
-      </div>
-
-      <strong>{account.number}</strong>
-
-      <small>Available Balance</small>
-
-      <h2>{account.balance}</h2>
-
-      <div className="account-card-footer">
-        View account details
-        <span>→</span>
-      </div>
-    </button>
-  );
-}
-
-/* TRANSACTIONS */
-
-function TransactionList({
-  items,
-  detailed = false,
-}) {
-  return (
-    <div
-      className={`transaction-list ${
-        detailed ? "transaction-list-detailed" : ""
-      }`}
-    >
-      {items.map((item, index) => (
-        <div
-          className="transaction-row"
-          key={index}
-        >
-          <div
-            className={`transaction-icon ${
-              item.type
-            }`}
-          >
-            {item.type === "credit"
-              ? "↓"
-              : "↑"}
-          </div>
-
-          <div className="transaction-info">
-            <strong>
-              {item.name}
-            </strong>
-
-            <span>
-              {item.date}
-              {detailed &&
-                ` • ${item.category}`}
-            </span>
-          </div>
-
-          <strong
-            className={`transaction-amount ${item.type}`}
-          >
-            {item.type === "credit"
-              ? "+"
-              : "-"}
-            {item.amount}
-          </strong>
-
-          {detailed && (
-            <button className="transaction-view">
-              View
-            </button>
-          )}
-        </div>
-      ))}
-    </div>
-  );
-}
-
-/* QUICK ACTION */
-
-function QuickAction({
-  icon,
-  title,
-  text,
-  onClick,
-}) {
-  return (
-    <button
-      className="quick-action"
-      onClick={onClick}
-    >
-      <div>{icon}</div>
-
-      <span>
-        <strong>{title}</strong>
-        <small>{text}</small>
-      </span>
-
-      <b>→</b>
-    </button>
-  );
-}
-
-/* PAYMENT */
-
-function PaymentCard({
-  icon,
-  title,
-  text,
-}) {
-  return (
-    <button className="payment-card">
-      <div className="payment-icon">
-        {icon}
-      </div>
-
-      <h3>{title}</h3>
-
-      <p>{text}</p>
-
-      <span>
-        Continue →
-      </span>
-    </button>
-  );
-}
-
-/* DOCUMENT */
-
-function DocumentCard({
-  title,
-  date,
-}) {
-  return (
-    <div className="document-card">
-      <div className="document-icon">
-        PDF
-      </div>
-
-      <div>
-        <strong>{title}</strong>
-
-        <span>{date}</span>
-      </div>
-
-      <button>
-        View →
-      </button>
-    </div>
-  );
-}
-
-/* PAGE */
-
-function PageContainer({
-  label,
-  title,
-  subtitle,
-  children,
-}) {
-  return (
-    <section className="bank-page-container">
-
-      <div className="bank-page-header">
-        <div>
-          <span>{label}</span>
-
-          <h1>{title}</h1>
-
-          <p>{subtitle}</p>
-        </div>
-      </div>
-
-      {children}
-    </section>
   );
 }
 

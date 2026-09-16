@@ -2,12 +2,12 @@ import React, { useState } from "react";
 import "./BankLogin.css";
 
 const USERS = [
-  { username: "Farhaana", password: "Farhaana@123" },
-  { username: "Ahamed", password: "Ahamed@123" },
-  { username: "Fathima", password: "Fathima@123" },
-  { username: "Rahman", password: "Rahman@123" },
-  { username: "Sana", password: "Sana@123" },
-  { username: "Zainab", password: "Zainab@123" },
+  { username: "srinivasan", password: "Sri@123" },
+  { username: "thirunavukarasu", password: "Thiru@123" },
+  { username: "abdul_vahith", password: "Abdul@123" },
+  { username: "priya", password: "Priya@123" },
+  { username: "farhaana", password: "Farhaana@123" },
+  { username: "sherin", password: "Sherin@123" },
 ];
 
 function CyberSecBankLogin({ onLogin }) {
@@ -21,7 +21,8 @@ function CyberSecBankLogin({ onLogin }) {
 
     const user = USERS.find(
       (item) =>
-        item.username.toLowerCase() === username.trim().toLowerCase() &&
+        item.username.toLowerCase() ===
+          username.trim().toLowerCase() &&
         item.password === password
     );
 
@@ -35,11 +36,13 @@ function CyberSecBankLogin({ onLogin }) {
 
   return (
     <div className="bank-login-page">
+
       <div className="bank-login-left">
+
         <div className="bank-login-brand">
           <div className="bank-logo-large">
             <img
-              src="/cybersecbank-photo.jpeg"
+              src="/cybersecbank-logo.png"
               alt="CyberSec Bank"
             />
           </div>
@@ -66,6 +69,7 @@ function CyberSecBankLogin({ onLogin }) {
           </p>
 
           <div className="security-points">
+
             <div>
               <span>✓</span>
               Secure Login
@@ -80,19 +84,23 @@ function CyberSecBankLogin({ onLogin }) {
               <span>✓</span>
               Digital Security
             </div>
+
           </div>
         </div>
 
         <div className="bank-login-footer">
           © 2026 CyberSec Bank
         </div>
+
       </div>
 
       <div className="bank-login-right">
+
         <div className="login-card">
+
           <div className="mobile-bank-logo">
             <img
-              src="/cybersecbank-photo.jpeg"
+              src="/cybersecbank-logo.png"
               alt="CyberSec Bank"
             />
           </div>
@@ -109,6 +117,7 @@ function CyberSecBankLogin({ onLogin }) {
           </div>
 
           <form onSubmit={handleSubmit}>
+
             <div className="input-group">
               <label>User ID</label>
 
@@ -157,14 +166,18 @@ function CyberSecBankLogin({ onLogin }) {
               Sign In
               <span>→</span>
             </button>
+
           </form>
 
           <div className="secure-login-note">
             <span>🔒</span>
             Secure connection • CyberSec Bank
           </div>
+
         </div>
+
       </div>
+
     </div>
   );
 }
