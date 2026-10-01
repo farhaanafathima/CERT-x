@@ -10,6 +10,7 @@ from datetime import datetime, timezone
 
 from pyhanko.pdf_utils.reader import PdfFileReader
 from pyhanko.sign.validation import validate_pdf_signature
+from pyhanko.sign.diff_analysis.policy_api import ModificationLevel
 from pyhanko_certvalidator import ValidationContext
 
 
@@ -150,67 +151,209 @@ def health():
 
 def threat_level(score):
 
-    if score > 80:
+    if score > 50:
         return "HIGH"
 
-    if score > 50:
+    if score > 25:
         return "MEDIUM"
 
     return "LOW"
 
 
 # ============================================================
-# PDF STRUCTURE ANALYSIS
+# PDF SECURITY / ATTACK SURFACE ANALYSIS
 # ============================================================
 
+def _count_token(pdf_data, token):
+    return pdf_data.count(token)
+
+
 def analyze_pdf_structure(pdf_data):
+    """Broad, evidence-based PDF attack-surface scan.
 
-    suspicious = 0
+    Normal PDF structures such as AcroForms, annotations, xref sections,
+    EOF markers and previous-revision references are informational only.
+    They are not attacks by themselves.
+    """
     findings = []
+    categories = []
 
+    def add(category, message, severity="INFO", suspicious=False):
+        findings.append({
+            "category": category,
+            "severity": severity,
+            "message": message,
+            "suspicious": suspicious
+        })
+        if suspicious:
+            categories.append(category)
+
+    # Active content / automatic actions
     if b"/JavaScript" in pdf_data or b"/JS" in pdf_data:
-
-        suspicious += 1
-
-        findings.append(
-            "JavaScript-related PDF object detected"
-        )
-
-    if b"/EmbeddedFile" in pdf_data:
-
-        suspicious += 1
-
-        findings.append(
-            "Embedded file detected"
-        )
-
+        add("ACTIVE_CONTENT", "JavaScript-related PDF object detected", "HIGH", True)
     if b"/OpenAction" in pdf_data:
-
-        suspicious += 1
-
-        findings.append(
-            "Automatic document action detected"
-        )
-
+        add("AUTOMATIC_ACTION", "OpenAction detected; document may execute an action when opened", "HIGH", True)
+    if b"/AA" in pdf_data:
+        add("AUTOMATIC_ACTION", "Additional Actions (/AA) detected", "HIGH", True)
     if b"/Launch" in pdf_data:
+        add("LAUNCH_ACTION", "Launch action detected", "HIGH", True)
+    if b"/SubmitForm" in pdf_data or b"/GoToR" in pdf_data:
+        add("EXTERNAL_ACTION", "External/form action detected", "HIGH", True)
 
-        suspicious += 1
+    # Embedded / external content
+    if b"/EmbeddedFile" in pdf_data or b"/Filespec" in pdf_data:
+        add("EMBEDDED_CONTENT", "Embedded file/file specification detected", "HIGH", True)
+    if b"/RichMedia" in pdf_data or b"/Flash" in pdf_data:
+        add("RICH_MEDIA", "Rich-media/legacy active content detected", "HIGH", True)
+    if b"/URI" in pdf_data:
+        add("EXTERNAL_REFERENCE", "URI action/reference detected", "MEDIUM", True)
 
-        findings.append(
-            "Launch action detected"
-        )
+    # Forms / annotations: informational unless another analysis proves abuse.
+    if b"/AcroForm" in pdf_data:
+        add("FORM", "Interactive AcroForm structure detected", "INFO", False)
+    if b"/XFA" in pdf_data:
+        add("XFA", "XFA form structure detected", "MEDIUM", True)
+    if b"/Annot" in pdf_data or b"/Annots" in pdf_data:
+        add("ANNOTATION", "PDF annotation structure detected", "INFO", False)
+
+    # Revision markers are informational. Post-signature changes are handled
+    # separately by PyHanko diff analysis and signed-byte coverage checks.
+    eof_count = _count_token(pdf_data, b"%%EOF")
+    startxref_count = _count_token(pdf_data, b"startxref")
+    prev_count = _count_token(pdf_data, b"/Prev")
+
+    if eof_count > 1:
+        add("INCREMENTAL_UPDATE", f"Multiple PDF revisions detected ({eof_count} EOF markers)", "INFO", False)
+    if prev_count > 0:
+        add("INCREMENTAL_UPDATE", f"Previous-revision references detected ({prev_count})", "INFO", False)
+    if startxref_count > 1:
+        add("XREF_REVISION", f"Multiple xref sections detected ({startxref_count})", "INFO", False)
+
+    # Normal PDF structures
+    if b"/ObjStm" in pdf_data:
+        add("OBJECT_STREAM", "Compressed PDF object stream detected", "INFO", False)
+    if b"/XRef" in pdf_data:
+        add("XREF_STREAM", "Cross-reference stream detected", "INFO", False)
+    if b"/Encrypt" in pdf_data:
+        add("ENCRYPTION", "PDF encryption dictionary detected", "INFO", False)
+    if b"/AcroForm" in pdf_data and b"/NeedAppearances" in pdf_data:
+        add("FORM_APPEARANCE", "Form appearance regeneration setting detected", "INFO", False)
+
+    suspicious_count = sum(
+        1 for f in findings if f.get("suspicious") is True
+    )
 
     if not findings:
-
-        findings.append(
-            "No basic suspicious PDF objects detected"
-        )
+        findings.append({
+            "category": "BASELINE",
+            "severity": "INFO",
+            "message": "No basic suspicious PDF objects detected",
+            "suspicious": False
+        })
 
     return {
-        "suspicious_features": suspicious,
-        "findings": findings
+        "suspicious_features": suspicious_count,
+        "findings": findings,
+        "revision_count": eof_count,
+        "xref_sections": startxref_count,
+        "previous_revision_references": prev_count,
+        "attack_surface_categories": sorted(set(categories))
     }
 
+# ============================================================
+# SIGNATURE / POST-SIGNATURE MODIFICATION ANALYSIS
+# ============================================================
+
+def analyze_signature_modifications(status, signature_count, pdf_data, signature=None):
+    """Detect post-signature changes using PyHanko diff analysis.
+
+    EOF/xref/Prev counts are informational only and never prove tampering.
+    """
+    modification_level = getattr(status, "modification_level", None)
+    docmdp_ok = getattr(status, "docmdp_ok", None)
+    coverage = getattr(status, "coverage", None)
+    diff_result = getattr(status, "diff_result", None)
+
+    level_name = getattr(modification_level, "name", None)
+    level_value = getattr(modification_level, "value", None)
+
+    modified_after_signing = False
+    suspicious_post_signature_change = False
+    findings = []
+
+    if modification_level is not None:
+        modified_after_signing = modification_level != ModificationLevel.NONE
+        if level_name:
+            findings.append(f"Post-signature modification level: {level_name}")
+        if modified_after_signing:
+            suspicious_post_signature_change = True
+            findings.append("Post-signature document revision detected")
+
+    if diff_result is not None:
+        diff_name = type(diff_result).__name__
+        if diff_name == "SuspiciousModification":
+            suspicious_post_signature_change = True
+            modified_after_signing = True
+            findings.append("PyHanko difference analysis reported a suspicious modification")
+
+    if docmdp_ok is False:
+        suspicious_post_signature_change = True
+        modified_after_signing = True
+        findings.append("Document modification does not comply with the active signature policy")
+
+    # Strong post-signature tamper check: a PDF signature normally covers the
+    # complete PDF revision except the signature container itself. If the
+    # signed ByteRange ends before the actual end of the uploaded file, there
+    # are unsigned bytes after the signed revision. In Cert X, an unsigned
+    # incremental update after a signature is treated as an unauthorized
+    # post-signature modification.
+    try:
+        sig_obj = getattr(signature, "sig_object", None)
+        byte_range = sig_obj.get("/ByteRange") if sig_obj is not None else None
+        if byte_range and len(byte_range) == 4:
+            br = [int(x) for x in byte_range]
+            signed_end = br[2] + br[3]
+            if signed_end < len(pdf_data):
+                trailing = pdf_data[signed_end:]
+                if trailing.strip():
+                    modified_after_signing = True
+                    suspicious_post_signature_change = True
+                    findings.append(
+                        "Unsigned PDF data detected after the signed ByteRange; "
+                        "possible post-signature modification"
+                    )
+    except Exception:
+        # Keep validation available even if a malformed ByteRange cannot be
+        # parsed; PyHanko's normal validation remains authoritative.
+        pass
+
+    if signature_count > 1:
+        findings.append(f"Multiple embedded signatures detected ({signature_count})")
+
+    eof_count = pdf_data.count(b"%%EOF")
+    startxref_count = pdf_data.count(b"startxref")
+    prev_count = pdf_data.count(b"/Prev")
+
+    if eof_count > 1:
+        findings.append(f"PDF contains {eof_count} EOF markers (informational)")
+    if prev_count > 0:
+        findings.append(f"PDF contains {prev_count} previous-revision references (informational)")
+    if startxref_count > 1:
+        findings.append(f"PDF contains {startxref_count} xref sections (informational)")
+
+    if not findings:
+        findings.append("No post-signature modification evidence detected")
+
+    return {
+        "modified_after_signing": modified_after_signing,
+        "suspicious": suspicious_post_signature_change,
+        "modification_level": level_name,
+        "modification_level_value": level_value,
+        "docmdp_compliant": docmdp_ok,
+        "coverage": getattr(coverage, "name", str(coverage) if coverage else None),
+        "findings": findings,
+        "strict_mode": "PYHANKO_DIFF_ANALYSIS"
+    }
 
 # ============================================================
 # QUANTUM-INSPIRED ANALYSIS
@@ -479,502 +622,234 @@ def create_alert(
 
 @app.post("/api/verify")
 async def verify_pdf(
-
     employee_id: str = Form(...),
-
     file: UploadFile = File(...)
-
 ):
 
-    # --------------------------------------------------------
-    # File validation
-    # --------------------------------------------------------
-
     if not file.filename.lower().endswith(".pdf"):
-
-        return {
-
-            "success": False,
-
-            "error":
-                "Only PDF files are supported."
-
-        }
+        return {"success": False, "error": "Only PDF files are supported."}
 
     pdf_data = await file.read()
 
     if not pdf_data:
+        return {"success": False, "error": "Uploaded PDF is empty."}
 
-        return {
+    sha256_hash = hashlib.sha256(pdf_data).hexdigest()
+    structure = analyze_pdf_structure(pdf_data)
 
-            "success": False,
-
-            "error":
-                "Uploaded PDF is empty."
-
-        }
-
-    # --------------------------------------------------------
-    # SHA-256
-    # --------------------------------------------------------
-
-    sha256_hash = hashlib.sha256(
-        pdf_data
-    ).hexdigest()
-
-    # --------------------------------------------------------
-    # Structure analysis
-    # --------------------------------------------------------
-
-    structure = analyze_pdf_structure(
-        pdf_data
-    )
-
-    # --------------------------------------------------------
-    # Temporary PDF
-    # --------------------------------------------------------
-
-    temp_file = tempfile.NamedTemporaryFile(
-        delete=False,
-        suffix=".pdf"
-    )
-
+    temp_file = tempfile.NamedTemporaryFile(delete=False, suffix=".pdf")
     temp_file.write(pdf_data)
-
     temp_file.close()
 
-    # --------------------------------------------------------
-    # Default values
-    # --------------------------------------------------------
-
     signature_found = False
-
     signature_valid = False
-
+    cryptographic_signature_valid = False
     document_integrity = False
-
     certificate_trusted = False
-
     signer_name = None
-
     organization = None
-
     reasons = []
+    modification_analysis = {
+        "modified_after_signing": False,
+        "suspicious": False,
+        "modification_level": None,
+        "modification_level_value": None,
+        "docmdp_compliant": None,
+        "coverage": None,
+        "findings": ["No digital signature found"],
+        "strict_mode": "PYHANKO_DIFF_ANALYSIS"
+    }
 
     try:
-
-        # ====================================================
-        # READ PDF
-        # ====================================================
-
-        with open(
-            temp_file.name,
-            "rb"
-        ) as f:
-
+        with open(temp_file.name, "rb") as f:
             reader = PdfFileReader(f)
-
             signatures = reader.embedded_signatures
 
-            # =================================================
-            # NO SIGNATURE
-            # =================================================
-
             if not signatures:
-
-                reasons.append(
-                    "No digital signature found"
-                )
-
+                reasons.append("No digital signature found")
                 risk_score = 40
-
-                risk_level = threat_level(
-                    risk_score
-                )
-
-                quantum = quantum_analysis(
-                    False,
-                    False,
-                    structure[
-                        "suspicious_features"
-                    ]
-                )
+                risk_level = threat_level(risk_score)
+                quantum = quantum_analysis(False, False, structure["suspicious_features"])
 
             else:
-
-                # =============================================
-                # SIGNATURE FOUND
-                # =============================================
-
                 signature_found = True
-
                 sig = signatures[0]
 
-                validation_context = (
-                    ValidationContext(
-                        trust_roots=[],
-                        allow_fetching=False
-                    )
+                validation_context = ValidationContext(
+                    trust_roots=[],
+                    allow_fetching=False
                 )
 
                 def validate():
-
                     return validate_pdf_signature(
                         sig,
-                        signer_validation_context=
-                            validation_context
+                        signer_validation_context=validation_context
                     )
 
-                status = await asyncio.to_thread(
-                    validate
+                status = await asyncio.to_thread(validate)
+
+                cryptographic_signature_valid = (
+                    bool(status.intact) and bool(status.valid)
                 )
 
-                signature_valid = bool(
-                    status.intact
+                modification_analysis = analyze_signature_modifications(
+                    status,
+                    len(signatures),
+                    pdf_data,
+                    sig
                 )
 
-                document_integrity = bool(
-                    status.docmdp_ok
+                # A document changed after signing is invalid for Cert X,
+                # even if the original CMS signature itself remains valid.
+                signature_valid = (
+                    cryptographic_signature_valid
+                    and not modification_analysis["suspicious"]
                 )
+
+                document_integrity = signature_valid
 
                 try:
-
-                    certificate_trusted = bool(
-                        status.valid_cert
-                    )
-
+                    certificate_trusted = bool(status.valid_cert)
                 except Exception:
-
                     certificate_trusted = False
 
-                # =============================================
-                # SIGNER
-                # =============================================
-
                 try:
-
-                    signer_cert = (
-                        sig.signer_cert
-                    )
-
+                    signer_cert = sig.signer_cert
                     if signer_cert:
-
-                        subject = (
-                            signer_cert.subject
-                        )
-
-                        signer_name = (
-                            subject.native.get(
-                                "common_name"
-                            )
-                        )
-
-                        organization = (
-                            subject.native.get(
-                                "organization_name"
-                            )
-                        )
-
+                        subject = signer_cert.subject
+                        signer_name = subject.native.get("common_name")
+                        organization = subject.native.get("organization_name")
                 except Exception:
-
                     pass
 
-                # =============================================
-                # REASONS
-                # =============================================
+                if modification_analysis["modified_after_signing"]:
+                    reasons.append("Post-signature PDF modification detected")
+
+                if modification_analysis["suspicious"]:
+                    for item in modification_analysis["findings"]:
+                        reasons.append(str(item))
 
                 if signature_valid:
-
-                    reasons.append(
-                        "Digital signature integrity verified"
-                    )
-
+                    reasons.append("Digital signature integrity verified")
                 else:
-
-                    reasons.append(
-                        "Digital signature verification failed"
-                    )
+                    reasons.append("Digital signature verification failed")
 
                 if document_integrity:
-
-                    reasons.append(
-                        "Document integrity check passed"
-                    )
-
+                    reasons.append("Document integrity check passed")
                 else:
+                    reasons.append("Possible document tampering detected")
 
-                    reasons.append(
-                        "Possible document tampering detected"
-                    )
+                # Only genuinely suspicious structure findings enter threat reasons.
+                for item in structure["findings"]:
+                    if isinstance(item, dict) and item.get("suspicious") is True:
+                        reasons.append(str(item.get("message", "Suspicious PDF feature detected")))
+                    elif isinstance(item, str):
+                        reasons.append(item)
 
-                if (
-                    structure[
-                        "suspicious_features"
-                    ] > 0
-                ):
-
-                    reasons.extend(
-                        structure[
-                            "findings"
-                        ]
-                    )
-
-                # =============================================
-                # RISK SCORE
-                # =============================================
-
+                # Evidence-weighted risk aggregation.
                 risk_score = 0
 
-                if not signature_valid:
+                if not cryptographic_signature_valid:
+                    risk_score += 60
 
-                    risk_score += 45
-
-                if not document_integrity:
-
-                    risk_score += 45
+                if modification_analysis["suspicious"]:
+                    risk_score += 60
 
                 risk_score += min(
-                    structure[
-                        "suspicious_features"
-                    ] * 5,
-                    20
+                    structure["suspicious_features"] * 10,
+                    40
                 )
 
-                risk_score = min(
-                    risk_score,
-                    100
-                )
-
-                risk_level = threat_level(
-                    risk_score
-                )
+                risk_score = min(risk_score, 100)
+                risk_level = threat_level(risk_score)
 
                 quantum = quantum_analysis(
                     signature_valid,
                     document_integrity,
-                    structure[
-                        "suspicious_features"
-                    ]
+                    structure["suspicious_features"]
                 )
 
-        # ====================================================
-        # BEHAVIOUR
-        # ====================================================
-
-        behaviour = behaviour_analysis(
-            employee_id
-        )
-
-        # ====================================================
-        # SAVE ACTIVITY
-        # ====================================================
+        behaviour = behaviour_analysis(employee_id)
 
         save_activity(
-
             employee_id,
-
             file.filename,
-
             risk_score,
-
             risk_level,
-
             signature_valid,
-
             document_integrity
-
         )
 
-        # ====================================================
-        # SECURITY OFFICER ALERT
-        # IMPORTANT: > 50
-        # ====================================================
-
-        alert_triggered = False
-
+        alert_triggered = risk_score > 50
         alert_id = None
 
-        if risk_score > 50:
-
-            alert_triggered = True
-
+        if alert_triggered:
             alert_id = create_alert(
-
                 employee_id,
-
                 file.filename,
-
                 risk_score,
-
                 risk_level,
-
-                "; ".join(reasons)
-
+                "; ".join(str(item) for item in reasons)
             )
 
-        # ====================================================
-        # FINAL RESPONSE
-        # ====================================================
-
         return {
-
             "success": True,
-
             "system": "Cert X",
-
             "document": {
-
-                "filename":
-                    file.filename,
-
-                "file_type":
-                    "PDF",
-
-                "size_bytes":
-                    len(pdf_data),
-
-                "sha256":
-                    sha256_hash
-
+                "filename": file.filename,
+                "file_type": "PDF",
+                "size_bytes": len(pdf_data),
+                "sha256": sha256_hash
             },
-
             "signature": {
-
-                "found":
-                    signature_found,
-
-                "valid":
-                    signature_valid,
-
-                "integrity":
-                    document_integrity,
-
-                "certificate_trusted":
-                    certificate_trusted
-
+                "found": signature_found,
+                "valid": signature_valid,
+                "cryptographic_valid": cryptographic_signature_valid,
+                "integrity": document_integrity,
+                "certificate_trusted": certificate_trusted
             },
-
             "signer": {
-
-                "identity_status":
-                    "CERTIFICATE_IDENTITY_AVAILABLE"
-                    if signer_name
-                    else "NOT_AVAILABLE",
-
-                "signer_name":
-                    signer_name,
-
-                "organization":
-                    organization
-
+                "identity_status": "CERTIFICATE_IDENTITY_AVAILABLE" if signer_name else "NOT_AVAILABLE",
+                "signer_name": signer_name,
+                "organization": organization
             },
-
             "authorization": {
-
-                "identity_match":
-                    "PENDING",
-
-                "organization_match":
-                    "PENDING",
-
-                "role_permission":
-                    "PENDING",
-
-                "overall_status":
-                    "REQUIRES_ORGANIZATION_DATABASE"
-
+                "identity_match": "PENDING",
+                "organization_match": "PENDING",
+                "role_permission": "PENDING",
+                "overall_status": "REQUIRES_ORGANIZATION_DATABASE"
             },
-
             "document_security": {
-
-                "tampering_detected":
-                    not document_integrity,
-
-                "structure_analysis":
-                    structure
-
+                "tampering_detected": not document_integrity,
+                "post_signature_modification": modification_analysis,
+                "structure_analysis": structure
             },
-
             "hash_analysis": {
-
-                "algorithm":
-                    "SHA-256",
-
-                "hash":
-                    sha256_hash,
-
-                "status":
-                    "CALCULATED"
-
+                "algorithm": "SHA-256",
+                "hash": sha256_hash,
+                "status": "CALCULATED"
             },
-
-            "quantum_analysis":
-                quantum,
-
-            "behaviour_analysis":
-                behaviour,
-
+            "quantum_analysis": quantum,
+            "behaviour_analysis": behaviour,
             "threat": {
-
-                "score":
-                    risk_score,
-
-                "level":
-                    risk_level,
-
-                "alert_required":
-                    alert_triggered,
-
-                "reasons":
-                    reasons
-
+                "score": risk_score,
+                "level": risk_level,
+                "alert_required": alert_triggered,
+                "reasons": reasons
             },
-
             "security_officer_alert": {
-
-                "triggered":
-                    alert_triggered,
-
-                "alert_id":
-                    alert_id,
-
-                "severity":
-                    risk_level
-                    if alert_triggered
-                    else "NONE",
-
-                "message":
-                    (
-                        "High-risk activity detected. "
-                        "Security Officer review required."
-                    )
-                    if alert_triggered
-                    else None
-
+                "triggered": alert_triggered,
+                "alert_id": alert_id,
+                "severity": risk_level if alert_triggered else "NONE",
+                "message": "High-risk activity detected. Security Officer review required." if alert_triggered else None
             }
-
         }
 
     except Exception as e:
-
-        return {
-
-            "success": False,
-
-            "system": "Cert X",
-
-            "error":
-                str(e)
-
-        }
+        return {"success": False, "system": "Cert X", "error": str(e)}
 
     finally:
-
-        Path(
-            temp_file.name
-        ).unlink(
-            missing_ok=True
-        )
+        Path(temp_file.name).unlink(missing_ok=True)
 
 
 # ============================================================
