@@ -64,36 +64,53 @@ function App() {
       ),
     [alerts]
   );
+  const recentActivity = useMemo(() => {
+    const now = Date.now();
+    const twentyFourHours = 24 * 60 * 60 * 1000;
+
+    return history.filter((record) => {
+      const time = new Date(record.timestamp).getTime();
+      return (
+        !Number.isNaN(time) &&
+        now >= time &&
+        now - time <= twentyFourHours
+      );
+    });
+  }, [history]);
+
   const highRiskAlerts = useMemo(
     () =>
-      alerts.filter(
-        (alert) =>
-          Number(alert.risk_score) >= 80
+      recentActivity.filter(
+        (record) =>
+          Number(record.risk_score) >= 80
       ),
-    [alerts]
+    [recentActivity]
   );
+
   const averageRisk = useMemo(() => {
-    if (!alerts.length) return 0;
-    const total = alerts.reduce(
-      (sum, alert) =>
+    if (!recentActivity.length) return 0;
+
+    const total = recentActivity.reduce(
+      (sum, record) =>
         sum +
-        Number(alert.risk_score || 0),
+        Number(record.risk_score || 0),
       0
     );
+
     return Math.round(
-      total / alerts.length
+      total / recentActivity.length
     );
-  }, [alerts]);
+  }, [recentActivity]);
   const uniqueEmployees = useMemo(() => {
     return new Set(
-      alerts
+      recentActivity
         .map(
-          (alert) =>
-            alert.employee_id
+          (record) =>
+            record.employee_id
         )
         .filter(Boolean)
     ).size;
-  }, [alerts]);
+  }, [recentActivity]);
   const resolveAlert = async (id) => {
     try {
       const endpoints = [
@@ -234,6 +251,7 @@ function App() {
             uniqueEmployees={
               uniqueEmployees
             }
+            recentActivity={recentActivity}
             loading={loading}
             apiError={apiError}
             setPage={setPage}
@@ -251,10 +269,7 @@ function App() {
         )}
         {page === "activity" && (
           <ActivityPage
-            alerts={alerts}
-            uniqueEmployees={
-              uniqueEmployees
-            }
+            history={history}
             loading={loading}
           />
         )}
@@ -265,7 +280,7 @@ function App() {
           <span>
             Cert X Security Monitoring System
           </span>
-          <span>•</span>
+          <span>â€¢</span>
           <span>
             Real-time protection enabled
           </span>
@@ -283,6 +298,7 @@ function Dashboard({
   highRiskAlerts,
   averageRisk,
   uniqueEmployees,
+  recentActivity,
   loading,
   apiError,
   setPage,
@@ -303,7 +319,7 @@ function Dashboard({
       <div className="stats-grid">
         <StatCard
           title="FILES VERIFIED"
-          value={alerts.length}
+          value={recentActivity.length}
           subtitle="Last 24 hours"
         />
         <StatCard
@@ -320,7 +336,7 @@ function Dashboard({
         <StatCard
           title="AVERAGE RISK"
           value={averageRisk}
-          subtitle="Current alerts"
+          subtitle="Current activity"
         />
       </div>
       <div className="dashboard-grid">
@@ -383,7 +399,7 @@ function Dashboard({
             <div>
               <span>Total Alerts</span>
               <strong>
-                {alerts.length}
+                {recentActivity.length}
               </strong>
             </div>
           </div>
@@ -453,51 +469,47 @@ function AlertsPage({
    ACTIVITY
    ========================================================= */
 function ActivityPage({
-  alerts,
-  uniqueEmployees,
+  history,
   loading,
 }) {
+  const activityAlerts = history.filter((record) => {
+    if (!record.timestamp) return false;
+
+    const activityTime = new Date(record.timestamp).getTime();
+    const now = Date.now();
+    const twentyFourHours = 24 * 60 * 60 * 1000;
+
+    return (
+      !Number.isNaN(activityTime) &&
+      now >= activityTime &&
+      now - activityTime <= twentyFourHours
+    );
+  });
+
   const activityRows =
-    alerts.length > 0
-      ? alerts.map((alert) => ({
-          time: formatDate(
-            alert.created_at
-          ),
-          employee:
-            alert.employee_id ||
-            "Unknown",
+    activityAlerts.length > 0
+      ? activityAlerts.map((record) => ({
+          time: formatDate(record.timestamp),
+          employee: record.employee_id || "Unknown",
           files: 1,
           highRisk:
-            Number(
-              alert.risk_score
-            ) >= 80
+            Number(record.risk_score) > 50
               ? 1
               : 0,
           status:
-            Number(
-              alert.risk_score
-            ) >= 80
+            Number(record.risk_score) > 50
               ? "HIGH RISK"
               : "NORMAL",
         }))
-      : [
-          {
-            time: "—",
-            employee:
-              uniqueEmployees
-                ? "EMP001"
-                : "—",
-            files: 0,
-            highRisk: 0,
-            status: "NORMAL",
-          },
-        ];
+      : [];
+
   return (
     <section className="page">
       <PageHeader
         title="Security Activity"
         subtitle="Real-time digital signature security monitoring"
       />
+
       <section className="panel full-panel">
         <PanelHeader
           title="Security Activity"
@@ -508,8 +520,15 @@ function ActivityPage({
             </span>
           }
         />
+
         {loading ? (
           <Loading />
+        ) : activityRows.length === 0 ? (
+          <EmptyState
+            icon="3"
+            title="No activity in the last 24 hours"
+            text="Activity records older than 24 hours are not displayed here. They remain available in Security History."
+          />
         ) : (
           <div className="table-wrap">
             <table className="security-table">
@@ -522,39 +541,39 @@ function ActivityPage({
                   <th>STATUS</th>
                 </tr>
               </thead>
+
               <tbody>
-                {activityRows.map(
-                  (row, index) => (
-                    <tr key={index}>
-                      <td>{row.time}</td>
-                      <td>
-                        <strong>
-                          {row.employee}
-                        </strong>
-                      </td>
-                      <td>{row.files}</td>
-                      <td
-                        className={
-                          row.highRisk
-                            ? "risk-number"
-                            : ""
+                {activityRows.map((row, index) => (
+                  <tr key={index}>
+                    <td>{row.time}</td>
+
+                    <td>
+                      <strong>{row.employee}</strong>
+                    </td>
+
+                    <td>{row.files}</td>
+
+                    <td
+                      className={
+                        row.highRisk
+                          ? "risk-number"
+                          : ""
+                      }
+                    >
+                      {row.highRisk}
+                    </td>
+
+                    <td>
+                      <StatusBadge
+                        status={
+                          row.status === "HIGH RISK"
+                            ? "HIGH"
+                            : "NORMAL"
                         }
-                      >
-                        {row.highRisk}
-                      </td>
-                      <td>
-                        <StatusBadge
-                          status={
-                            row.status ===
-                            "HIGH RISK"
-                              ? "HIGH"
-                              : "NORMAL"
-                          }
-                        />
-                      </td>
-                    </tr>
-                  )
-                )}
+                      />
+                    </td>
+                  </tr>
+                ))}
               </tbody>
             </table>
           </div>
@@ -563,9 +582,7 @@ function ActivityPage({
     </section>
   );
 }
-/* =========================================================
-   HISTORY
-   ========================================================= */
+
 function HistoryPage({
   history,
   loading,
@@ -590,7 +607,7 @@ function HistoryPage({
           <Loading />
         ) : history.length === 0 ? (
           <EmptyState
-            icon="¤"
+            icon="Â¤"
             title="No history available"
             text="Security verification records will appear here."
           />
@@ -827,7 +844,7 @@ function Loading() {
   );
 }
 function formatDate(date) {
-  if (!date) return "—";
+  if (!date) return "â€”";
   const parsed =
     new Date(date);
   if (
